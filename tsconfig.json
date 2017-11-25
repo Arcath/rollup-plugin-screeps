@@ -10,11 +10,7 @@
     "noImplicitReturns": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
-    "types": [
-      "mocha",
-      "rollup",
-      "node"
-    ]
+    "declaration": true
   },
   "exclude": [
     "node_modules"
