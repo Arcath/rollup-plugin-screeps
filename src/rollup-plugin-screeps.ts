@@ -1,64 +1,87 @@
-import {ScreepsAPI} from 'screeps-api'
+import { ScreepsAPI } from 'screeps-api'
 import * as fs from 'fs'
 import * as git from 'git-rev-sync'
 import * as path from 'path'
+import { BundleOptions, Bundle, Plugin, GenerateOptions, WriteOptions } from 'rollup';
 
-export function screeps(screepsOptions: ScreepsOptions = {}){
-  return {
-    name: "screeps",
-    ongenerate: (options: any, bundle: any) => {
-      if(options.sourcemap){
-        generateSourceMaps(bundle)
-      }
-    },
-    onwrite: (options: any, bundle: any) => {
-      if(options.sourcemap){
-        writeSourceMaps(options)
-      }
-
-      if(!screepsOptions.dryRun){
-        uploadSource(screepsOptions.configFile!, options, bundle)
-      }
-    }
-  }
+export interface ScreepsConfig {
+  email: string,
+  password: string,
+  protocol: "http" | "https",
+  hostname: string,
+  port: number,
+  path: string,
+  branch: string | "auto"
 }
 
-export function generateSourceMaps(bundle: any){
-  let tmp = bundle.map.toString
+export interface ScreepsOptions{
+  configFile?: string
+  config?: ScreepsConfig
+  dryRun?: boolean
+}
 
-  delete bundle.map.sourceContent
 
-  bundle.map.toString = function () {
+export interface CodeList{
+  [key: string]: string
+}
+
+export function generateSourceMaps(bundle: Bundle) {
+  const b = bundle as Bundle & {map: { sourceContent: string }};
+
+  let tmp = b.map.toString
+
+  delete b.map.sourceContent
+
+  b.map.toString = function () {
     return "module.exports = " + tmp.apply(this, arguments) + ";";
   }
 }
 
-export function writeSourceMaps(options: any){
+export function writeSourceMaps(options: WriteOptions) {
   fs.renameSync(
     options.file + '.map',
     options.file + '.map.js'
   )
 }
 
-export function uploadSource(configFile: string, options: any, bundle: any){
-  if(!configFile){
-    console.log('screeps() needs the path of your config file e.g. screeps({configFile: \'./screeps.json\'})')
-    return
-  }else{
-    let config = getConfig(configFile)
+export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfig {
+  return [
+    typeof cfg.email === "string",
+    typeof cfg.password === "string",
+    cfg.protocol === "http" || cfg.protocol === "https",
+    typeof cfg.hostname === "string",
+    typeof cfg.port === "number",
+    typeof cfg.path === "string",
+    typeof cfg.branch === "string"
+  ].reduce((a,b) => a && b)
+}
+
+export function loadConfigFile(configFile: string) {
+  let data = fs.readFileSync(configFile, 'utf8')
+  let cfg = JSON.parse(data) as Partial<ScreepsConfig>
+  if (!validateConfig(cfg)) throw new TypeError("Invalid config")
+  return cfg;
+}
+
+export function uploadSource(config: string | ScreepsConfig, options: WriteOptions, bundle: Bundle) {
+  if (!config) {
+    console.log('screeps() needs a config e.g. screeps({configFile: \'./screeps.json\'}) or screeps({config: { ... }})')
+  } else {
+    if (typeof config === "string") config = loadConfigFile(config)
+
     let code = getFileList(options.file)
     let branch = getBranchName(config.branch)
 
     let api = new ScreepsAPI()
 
     api.setServer(config)
-    api.auth().then(function(){
-      api.raw.user.branches().then((data: any) =>{
+    api.auth().then(function () {
+      api.raw.user.branches().then((data: any) => {
         let branches = data.list.map((b: any) => b.branch)
 
-        if(branches.includes(branch)){
+        if (branches.includes(branch)) {
           api.code.set(branch, code)
-        }else{
+        } else {
           api.raw.user.cloneBranch('', branch, code)
         }
       })
@@ -66,12 +89,7 @@ export function uploadSource(configFile: string, options: any, bundle: any){
   }
 }
 
-export function getConfig(configFile: string){
-  let data = fs.readFileSync(configFile, 'utf8')
-  return JSON.parse(data)
-}
-
-export function getFileList(outputFile: string){
+export function getFileList(outputFile: string) {
   let code: CodeList = {}
   let base = path.dirname(outputFile)
   let files = fs.readdirSync(base).filter((f) => path.extname(f) === '.js')
@@ -81,12 +99,30 @@ export function getFileList(outputFile: string){
   return code
 }
 
-export function getBranchName(branch: string){
-  if(branch === 'auto'){
+export function getBranchName(branch: string) {
+  if (branch === 'auto') {
     return git.branch()
-  }else{
+  } else {
     return branch
   }
+}
+
+export function screeps(screepsOptions: ScreepsOptions = {}) {
+  return {
+    name: "screeps",
+
+    ongenerate(options: GenerateOptions, bundle: Bundle) {
+      if (options.sourcemap) generateSourceMaps(bundle);
+    },
+
+    onwrite(options: WriteOptions, bundle: Bundle) {
+      if (options.sourcemap) writeSourceMaps(options);
+
+      if (!screepsOptions.dryRun) {
+        uploadSource((screepsOptions.configFile || screepsOptions.config)!, options, bundle);
+      }
+    }
+  } as Plugin;
 }
 
 export default screeps

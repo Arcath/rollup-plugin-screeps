@@ -116,7 +116,7 @@ describe('Rollup Screeps Plugin', function(){
   })
 
   it('should get the config', function(){
-    var config = screeps.getConfig('./tests/fixtures/screeps.json')
+    var config = screeps.loadConfigFile('./tests/fixtures/screeps.json')
     expect(config.branch).to.equal('foo')
   })
 })
