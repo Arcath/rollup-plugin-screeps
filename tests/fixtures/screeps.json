@@ -1,3 +1,9 @@
 {
+  "email": "user@example.com",
+  "password": "Password1",
+  "protocol": "https",
+  "hostname": "screeps.com",
+  "port": 443,
+  "path": "/",
   "branch": "foo"
 }
