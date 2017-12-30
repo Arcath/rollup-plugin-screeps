@@ -1,6 +1,5 @@
 {
-  "email": "user@example.com",
-  "password": "Password1",
+  "token": "abcdef12345",
   "protocol": "https",
   "hostname": "screeps.com",
   "port": 443,

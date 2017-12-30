@@ -5,8 +5,9 @@ import * as path from 'path'
 import { BundleOptions, Bundle, Plugin, GenerateOptions, WriteOptions } from 'rollup';
 
 export interface ScreepsConfig {
-  email: string,
-  password: string,
+  token: string
+  email?: string
+  password?: string
   protocol: "http" | "https",
   hostname: string,
   port: number,
@@ -46,8 +47,7 @@ export function writeSourceMaps(options: WriteOptions) {
 
 export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfig {
   return [
-    typeof cfg.email === "string",
-    typeof cfg.password === "string",
+    typeof cfg.token === "string",
     cfg.protocol === "http" || cfg.protocol === "https",
     typeof cfg.hostname === "string",
     typeof cfg.port === "number",
@@ -59,6 +59,7 @@ export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfi
 export function loadConfigFile(configFile: string) {
   let data = fs.readFileSync(configFile, 'utf8')
   let cfg = JSON.parse(data) as Partial<ScreepsConfig>
+  if(cfg.email && cfg.password && !cfg.token){ console.log('Please change your email/password to a token') }
   if (!validateConfig(cfg)) throw new TypeError("Invalid config")
   return cfg;
 }
