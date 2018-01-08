@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-screeps",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Rollup Plugin for Screeps",
   "main": "dist/index.js",
   "scripts": {

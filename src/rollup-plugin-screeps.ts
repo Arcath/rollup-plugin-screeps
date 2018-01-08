@@ -73,19 +73,16 @@ export function uploadSource(config: string | ScreepsConfig, options: WriteOptio
     let code = getFileList(options.file)
     let branch = getBranchName(config.branch)
 
-    let api = new ScreepsAPI()
+    let api = new ScreepsAPI(config)
 
-    api.setServer(config)
-    api.auth().then(function () {
-      api.raw.user.branches().then((data: any) => {
-        let branches = data.list.map((b: any) => b.branch)
+    api.raw.user.branches().then((data: any) => {
+      let branches = data.list.map((b: any) => b.branch)
 
-        if (branches.includes(branch)) {
-          api.code.set(branch, code)
-        } else {
-          api.raw.user.cloneBranch('', branch, code)
-        }
-      })
+      if (branches.includes(branch)) {
+        api.code.set(branch, code)
+      } else {
+        api.raw.user.cloneBranch('', branch, code)
+      }
     })
   }
 }
