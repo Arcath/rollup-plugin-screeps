@@ -5,7 +5,7 @@ import * as path from 'path'
 import { BundleOptions, Bundle, Plugin, GenerateOptions, WriteOptions } from 'rollup';
 
 export interface ScreepsConfig {
-  token: string
+  token?: string
   email?: string
   password?: string
   protocol: "http" | "https",
@@ -46,21 +46,32 @@ export function writeSourceMaps(options: WriteOptions) {
 }
 
 export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfig {
+  if(cfg.hostname && cfg.hostname === 'screeps.com'){
+    return [
+      typeof cfg.token === "string",
+      cfg.protocol === "http" || cfg.protocol === "https",
+      typeof cfg.hostname === "string",
+      typeof cfg.port === "number",
+      typeof cfg.path === "string",
+      typeof cfg.branch === "string"
+    ].reduce((a,b) => a && b)
+  }
+
   return [
-    typeof cfg.token === "string",
+    (typeof cfg.email === 'string' && typeof cfg.password === 'string') || typeof cfg.token === 'string',
     cfg.protocol === "http" || cfg.protocol === "https",
     typeof cfg.hostname === "string",
     typeof cfg.port === "number",
     typeof cfg.path === "string",
     typeof cfg.branch === "string"
-  ].reduce((a,b) => a && b)
+  ].reduce((a, b) => a && b)
 }
 
 export function loadConfigFile(configFile: string) {
   let data = fs.readFileSync(configFile, 'utf8')
   let cfg = JSON.parse(data) as Partial<ScreepsConfig>
-  if(cfg.email && cfg.password && !cfg.token){ console.log('Please change your email/password to a token') }
   if (!validateConfig(cfg)) throw new TypeError("Invalid config")
+  if(cfg.email && cfg.password && !cfg.token && cfg.hostname === 'screeps.com'){ console.log('Please change your email/password to a token') }  
   return cfg;
 }
 
@@ -75,16 +86,26 @@ export function uploadSource(config: string | ScreepsConfig, options: WriteOptio
 
     let api = new ScreepsAPI(config)
 
-    api.raw.user.branches().then((data: any) => {
-      let branches = data.list.map((b: any) => b.branch)
-
-      if (branches.includes(branch)) {
-        api.code.set(branch, code)
-      } else {
-        api.raw.user.cloneBranch('', branch, code)
-      }
-    })
+    if(!config.token){
+      api.auth().then(() => {
+        runUpload(api, branch!, code)
+      })
+    }else{
+      runUpload(api, branch!, code)
+    }
   }
+}
+
+export function runUpload(api: any, branch: string, code: CodeList){
+  api.raw.user.branches().then((data: any) => {
+    let branches = data.list.map((b: any) => b.branch)
+
+    if (branches.includes(branch)) {
+      api.code.set(branch, code)
+    } else {
+      api.raw.user.cloneBranch('', branch, code)
+    }
+  })
 }
 
 export function getFileList(outputFile: string) {
