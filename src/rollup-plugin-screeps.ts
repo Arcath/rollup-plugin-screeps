@@ -2,7 +2,7 @@ import { ScreepsAPI } from 'screeps-api'
 import * as fs from 'fs'
 import * as git from 'git-rev-sync'
 import * as path from 'path'
-import { BundleOptions, Bundle, Plugin, GenerateOptions, WriteOptions } from 'rollup';
+import { Plugin, OutputOptions, SourceDescription } from 'rollup';
 
 export interface ScreepsConfig {
   token?: string
@@ -26,8 +26,8 @@ export interface CodeList{
   [key: string]: string
 }
 
-export function generateSourceMaps(bundle: Bundle) {
-  const b = bundle as Bundle & {map: { sourceContent: string }};
+export function generateSourceMaps(bundle: SourceDescription) {
+  const b = bundle as SourceDescription & {map: { sourceContent: string }};
 
   let tmp = b.map.toString
 
@@ -38,7 +38,7 @@ export function generateSourceMaps(bundle: Bundle) {
   }
 }
 
-export function writeSourceMaps(options: WriteOptions) {
+export function writeSourceMaps(options: OutputOptions) {
   fs.renameSync(
     options.file + '.map',
     options.file + '.map.js'
@@ -75,13 +75,13 @@ export function loadConfigFile(configFile: string) {
   return cfg;
 }
 
-export function uploadSource(config: string | ScreepsConfig, options: WriteOptions, bundle: Bundle) {
+export function uploadSource(config: string | ScreepsConfig, options: OutputOptions, bundle: SourceDescription) {
   if (!config) {
     console.log('screeps() needs a config e.g. screeps({configFile: \'./screeps.json\'}) or screeps({config: { ... }})')
   } else {
     if (typeof config === "string") config = loadConfigFile(config)
 
-    let code = getFileList(options.file)
+    let code = getFileList(options.file!)
     let branch = getBranchName(config.branch)
 
     let api = new ScreepsAPI(config)
@@ -130,11 +130,11 @@ export function screeps(screepsOptions: ScreepsOptions = {}) {
   return {
     name: "screeps",
 
-    ongenerate(options: GenerateOptions, bundle: Bundle) {
+    ongenerate(options: OutputOptions, bundle: SourceDescription) {
       if (options.sourcemap) generateSourceMaps(bundle);
     },
 
-    onwrite(options: WriteOptions, bundle: Bundle) {
+    onwrite(options: OutputOptions, bundle: SourceDescription) {
       if (options.sourcemap) writeSourceMaps(options);
 
       if (!screepsOptions.dryRun) {
