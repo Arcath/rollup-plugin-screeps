@@ -2,7 +2,8 @@ import { ScreepsAPI } from 'screeps-api'
 import * as fs from 'fs'
 import * as git from 'git-rev-sync'
 import * as path from 'path'
-import { Plugin, OutputOptions, SourceDescription } from 'rollup';
+import { Plugin, OutputOptions, SourceDescription, OutputBundle, PluginContext } from 'rollup';
+
 
 export interface ScreepsConfig {
   token?: string
@@ -26,16 +27,26 @@ export interface CodeList{
   [key: string]: string
 }
 
-export function generateSourceMaps(bundle: SourceDescription) {
-  const b = bundle as SourceDescription & {map: { sourceContent: string }};
+export function generateSourceMaps(bundle: OutputBundle) {
+  // Iterate through bundle and test if type===chunk && map is defined
+  let itemName: string;
+  for (itemName in bundle) {
+    let item = bundle[itemName];
+    if (item.type === "chunk" && item.map) {
 
-  let tmp = b.map.toString
-
-  delete b.map.sourceContent
-
-  b.map.toString = function () {
-    return "module.exports = " + tmp.apply(this, arguments) + ";";
+      // Tweak maps
+      let tmp = item.map.toString;
+    
+      delete item.map.sourcesContent;
+    
+      item.map.toString = function () {
+        return "module.exports = " + tmp.apply(this, arguments as unknown as []) + ";";
+       
+    }
   }
+
+  }
+
 }
 
 export function writeSourceMaps(options: OutputOptions) {
@@ -75,7 +86,7 @@ export function loadConfigFile(configFile: string) {
   return cfg;
 }
 
-export function uploadSource(config: string | ScreepsConfig, options: OutputOptions, bundle: SourceDescription) {
+export function uploadSource(config: string | ScreepsConfig, options: OutputOptions, bundle: OutputBundle) {
   if (!config) {
     console.log('screeps() needs a config e.g. screeps({configFile: \'./screeps.json\'}) or screeps({config: { ... }})')
   } else {
@@ -126,15 +137,17 @@ export function getBranchName(branch: string) {
   }
 }
 
+const ex = (x: any) => JSON.stringify(x, null, 2);
+
 export function screeps(screepsOptions: ScreepsOptions = {}) {
   return {
     name: "screeps",
 
-    ongenerate(options: OutputOptions, bundle: SourceDescription) {
+    generateBundle(options: OutputOptions, bundle: OutputBundle, isWrite: boolean) {
       if (options.sourcemap) generateSourceMaps(bundle);
     },
 
-    onwrite(options: OutputOptions, bundle: SourceDescription) {
+    writeBundle(options: OutputOptions, bundle: OutputBundle) {
       if (options.sourcemap) writeSourceMaps(options);
 
       if (!screepsOptions.dryRun) {
