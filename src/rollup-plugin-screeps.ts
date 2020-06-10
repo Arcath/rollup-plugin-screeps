@@ -9,11 +9,12 @@ export interface ScreepsConfig {
   token?: string
   email?: string
   password?: string
-  protocol: "http" | "https",
-  hostname: string,
-  port: number,
-  path: string,
+  protocol: "http" | "https"
+  hostname: string
+  port: number
+  path: string
   branch: string | "auto"
+  ptr?: number
 }
 
 export interface ScreepsOptions{
@@ -97,6 +98,8 @@ export function uploadSource(config: string | ScreepsConfig, options: OutputOpti
 
     let api = new ScreepsAPI(config)
 
+    console.log(`Uploading code to ${getServerLabel(config)} server`);
+
     if(!config.token){
       api.auth().then(() => {
         runUpload(api, branch!, code)
@@ -135,6 +138,17 @@ export function getBranchName(branch: string) {
   } else {
     return branch
   }
+}
+
+function getServerLabel(config: ScreepsConfig) {
+  if (config.hostname === 'screeps.com') {
+    let label = 'Official'
+    if (config.ptr) {
+      label += ' PTR'
+    }
+    return label
+  }
+  return 'Private'
 }
 
 const ex = (x: any) => JSON.stringify(x, null, 2);
