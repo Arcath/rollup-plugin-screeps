@@ -22,9 +22,12 @@ export interface ScreepsOptions{
   dryRun?: boolean
 }
 
+export interface BinaryModule {
+  binary: string
+}
 
 export interface CodeList{
-  [key: string]: string
+  [key: string]: string | BinaryModule
 }
 
 export function generateSourceMaps(bundle: OutputBundle) {
@@ -122,9 +125,15 @@ export function runUpload(api: any, branch: string, code: CodeList){
 export function getFileList(outputFile: string) {
   let code: CodeList = {}
   let base = path.dirname(outputFile)
-  let files = fs.readdirSync(base).filter((f) => path.extname(f) === '.js')
+  var files = fs.readdirSync(base).filter(function (f) { return path.extname(f) === '.js' || path.extname(f) === '.wasm'; })
   files.map((file) => {
-    code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8')
+    if (file.endsWith('.js')) {
+        code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8');
+    } else {
+        code[file] = {
+            binary: fs.readFileSync(path.join(base, file)).toString('base64')
+        }
+    }
   })
   return code
 }
