@@ -125,7 +125,7 @@ export function runUpload(api: any, branch: string, code: CodeList){
 export function getFileList(outputFile: string) {
   let code: CodeList = {}
   let base = path.dirname(outputFile)
-  var files = fs.readdirSync(base).filter(function (f) { return path.extname(f) === '.js' || path.extname(f) === '.wasm'; })
+  let files = fs.readdirSync(base).filter((f) =>  path.extname(f) === '.js' || path.extname(f) === '.wasm' )
   files.map((file) => {
     if (file.endsWith('.js')) {
         code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8');
