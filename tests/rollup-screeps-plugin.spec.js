@@ -5,6 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const git = require('git-rev-sync')
 const clear = require("rollup-plugin-clear");
+const copy = require("rollup-plugin-copy")
 
 const screeps = require('../src/rollup-plugin-screeps')
 
@@ -159,6 +160,11 @@ describe('Rollup Screeps Plugin', function(){
       plugins: [
         clear({"targets": ["./tests/dist"]}),
         typescript({tsconfig: './tests/tsconfig.json'}),
+        copy({
+          targets: [
+            { src: "./tests/fixtures/*.wasm", dest: "./tests/dist" }
+          ]
+        }),
         screeps.screeps(screepsOptions)
       ]
     }
@@ -168,10 +174,44 @@ describe('Rollup Screeps Plugin', function(){
     
     var code = screeps.getFileList(options.output.file)
 
-    expect(Object.keys(code).length).to.equal(2)
+    expect(Object.keys(code).length).to.equal(3)
     expect(code.main).to.match(/input/)
     expect(code['main.js.map']).to.match(/^module.exports/)
  
+  })
+
+  it('should upload WASM files as binary modules', async function() {
+    var screepsOptions = {
+      dryRun: true
+    }
+
+    var options = {
+      input: './tests/fixtures/main.ts',
+      output: {
+        file: './tests/dist/main.js',
+        sourcemap: true,
+        format: 'cjs'
+      },
+      plugins: [
+        clear({"targets": ["./tests/dist"]}),
+        typescript({tsconfig: './tests/tsconfig.json'}),
+        copy({
+          targets: [
+            { src: "./tests/fixtures/*.wasm", dest: "./tests/dist" }
+          ]
+        }),
+        screeps.screeps(screepsOptions)
+      ]
+    }
+
+    let bundle = await rollup.rollup(options);
+    let output = await bundle.write(options.output);
+    
+    var code = screeps.getFileList(options.output.file)
+
+    expect(code['wasm_module.wasm']).to.be.an('object');
+    expect(code['wasm_module.wasm'].binary).to.be.a('string')
+    expect(code.main).to.be.a('string')
   })
 
   it('should get the config', function(){
