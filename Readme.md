@@ -32,8 +32,7 @@ rollup-plugin-screeps needs your screeps username/password and the server to upl
 
 ```json
 {
-  "email": "you@domain.tld",
-  "password": "pass",
+  "token": "abcdef12345",
   "protocol": "https",
   "hostname": "screeps.com",
   "port": 443,
