@@ -15,7 +15,7 @@
     "test": "mocha -r esm -r ts-node/register tests/**/*.spec.js"
   },
   "dependencies": {
-    "git-rev-sync": "^2.0.0",
+    "git-rev-sync": "^3.0.2",
     "screeps-api": "^1.11.0"
   },
   "devDependencies": {
