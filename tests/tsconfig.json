@@ -3,6 +3,7 @@
     "compilerOptions": {
         "baseUrl": "./fixtures/main.ts",
         "outDir": "./dist",
+        "module": "es2020",
         "typeRoots": ["./node_modules/@types","./src"],
         "declaration": false
     },

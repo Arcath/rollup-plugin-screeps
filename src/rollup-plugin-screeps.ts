@@ -6,17 +6,17 @@ import { Plugin, OutputOptions, SourceDescription, OutputBundle, PluginContext }
 
 
 export interface ScreepsConfig {
-  token?: string
-  email?: string
-  password?: string
-  protocol: "http" | "https",
+  token?: string,
+  email?: string,
+  password?: string,
+  protocol: string,
   hostname: string,
   port: number,
   path: string,
-  branch: string | "auto"
+  branch: string
 }
 
-export interface ScreepsOptions{
+export interface ScreepsOptions {
   configFile?: string
   config?: ScreepsConfig
   dryRun?: boolean
@@ -26,7 +26,7 @@ export interface BinaryModule {
   binary: string
 }
 
-export interface CodeList{
+export interface CodeList {
   [key: string]: string | BinaryModule
 }
 
@@ -39,14 +39,14 @@ export function generateSourceMaps(bundle: OutputBundle) {
 
       // Tweak maps
       let tmp = item.map.toString;
-    
-      delete item.map.sourcesContent;
-    
+
+      //delete item.map.sourcesContent;
+
       item.map.toString = function () {
         return "module.exports = " + tmp.apply(this, arguments as unknown as []) + ";";
-       
+
+      }
     }
-  }
 
   }
 
@@ -60,7 +60,7 @@ export function writeSourceMaps(options: OutputOptions) {
 }
 
 export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfig {
-  if(cfg.hostname && cfg.hostname === 'screeps.com'){
+  if (cfg.hostname && cfg.hostname === 'screeps.com') {
     return [
       typeof cfg.token === "string",
       cfg.protocol === "http" || cfg.protocol === "https",
@@ -68,7 +68,7 @@ export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfi
       typeof cfg.port === "number",
       typeof cfg.path === "string",
       typeof cfg.branch === "string"
-    ].reduce((a,b) => a && b)
+    ].reduce((a, b) => a && b)
   }
 
   return [
@@ -85,7 +85,7 @@ export function loadConfigFile(configFile: string) {
   let data = fs.readFileSync(configFile, 'utf8')
   let cfg = JSON.parse(data) as Partial<ScreepsConfig>
   if (!validateConfig(cfg)) throw new TypeError("Invalid config")
-  if(cfg.email && cfg.password && !cfg.token && cfg.hostname === 'screeps.com'){ console.log('Please change your email/password to a token') }  
+  if (cfg.email && cfg.password && !cfg.token && cfg.hostname === 'screeps.com') { console.log('Please change your email/password to a token') }
   return cfg;
 }
 
@@ -100,17 +100,17 @@ export function uploadSource(config: string | ScreepsConfig, options: OutputOpti
 
     let api = new ScreepsAPI(config)
 
-    if(!config.token){
+    if (!config.token) {
       api.auth().then(() => {
         runUpload(api, branch!, code)
       })
-    }else{
+    } else {
       runUpload(api, branch!, code)
     }
   }
 }
 
-export function runUpload(api: any, branch: string, code: CodeList){
+export function runUpload(api: any, branch: string, code: CodeList) {
   api.raw.user.branches().then((data: any) => {
     let branches = data.list.map((b: any) => b.branch)
 
@@ -125,14 +125,14 @@ export function runUpload(api: any, branch: string, code: CodeList){
 export function getFileList(outputFile: string) {
   let code: CodeList = {}
   let base = path.dirname(outputFile)
-  let files = fs.readdirSync(base).filter((f) =>  path.extname(f) === '.js' || path.extname(f) === '.wasm' )
+  let files = fs.readdirSync(base).filter((f) => path.extname(f) === '.js' || path.extname(f) === '.wasm')
   files.map((file) => {
     if (file.endsWith('.js')) {
-        code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8');
+      code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8');
     } else {
-        code[file] = {
-            binary: fs.readFileSync(path.join(base, file)).toString('base64')
-        }
+      code[file] = {
+        binary: fs.readFileSync(path.join(base, file)).toString('base64')
+      }
     }
   })
   return code

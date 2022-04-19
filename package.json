@@ -2,37 +2,44 @@
   "name": "rollup-plugin-screeps",
   "description": "Rollup Plugin for Screeps",
   "license": "MIT",
-  "author": "Adam Laycock",
+  "author": "Forked from Adam Laycock, fork by Austin Clarke",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Arcath/rollup-plugin-screeps"
+    "url": "https://github.com/aclarke822/rollup-plugin-screeps"
   },
-  "version": "1.0.1",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
     "prepublishOnly": "rollup -c",
-    "test": "mocha -r esm -r ts-node/register tests/**/*.spec.js"
+    "test": "mocha -r esm -r ts-node/register tests/**/*.spec.ts"
   },
   "dependencies": {
-    "git-rev-sync": "^3.0.2",
-    "screeps-api": "^1.11.0"
+    "git-rev-sync": "^3.x",
+    "screeps-api": "^1.x"
   },
   "devDependencies": {
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^13.11.1",
-    "@types/rollup": "^0.54.0",
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "esm": "^3.2.25",
-    "mocha": "^7.1.1",
-    "rollup": "^2.6.0",
-    "rollup-plugin-clear": "^2.0.7",
-    "rollup-plugin-copy": "^3.3.0",
-    "rollup-plugin-hypothetical": "^2.1.0",
-    "rollup-plugin-typescript2": "^0.27.0",
-    "ts-node": "^8.8.2",
-    "typescript": "^3.8.3"
+    "@rollup/plugin-commonjs": "^21.x",
+    "@tsconfig/node17": "^1.x",
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/chai": "^4.3.1",
+    "@types/git-rev-sync": "^2.x",
+    "@types/mocha": "^9.x",
+    "@types/node": "^17.x",
+    "@types/rollup": "^0.x",
+    "chai": "^4.x",
+    "chai-as-promised": "^7.x",
+    "esm": "^3.x",
+    "mocha": "^9.x",
+    "rollup": "^2.x",
+    "rollup-plugin-clear": "^2.x",
+    "rollup-plugin-copy": "^3.x",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-hypothetical": "^2.x",
+    "rollup-plugin-typescript2": "^0.x",
+    "ts-node": "^10.x",
+    "tslib": "^2.x",
+    "typescript": "^4.x"
   },
   "keywords": [
     "rollup",
