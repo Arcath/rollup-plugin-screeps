@@ -3,7 +3,7 @@
 ## Install
 
 ```
-npm install --save-dev rollup-plugin-screeps
+[]
 ```
 
 ## Usage
@@ -11,7 +11,7 @@ npm install --save-dev rollup-plugin-screeps
 In `rollup.config.js`
 
 ```js
-import screeps from "rollup-plugin-screeps";
+import screeps from "[]";
 
 ...
 
@@ -28,7 +28,7 @@ export default {
 
 ### Config File
 
-rollup-plugin-screeps needs your screeps username/password and the server to upload to.
+[] needs your screeps username/password and the server to upload to.
 
 ```json
 {
