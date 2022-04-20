@@ -2,12 +2,12 @@
   "name": "rollup-plugin-screeps",
   "description": "Rollup Plugin for Screeps",
   "license": "MIT",
-  "author": "Forked from Adam Laycock, fork by Austin Clarke",
+  "author": "Forked from Adam Laycock (Arcath), fork by Austin Clarke (aclarke822)",
   "repository": {
     "type": "git",
     "url": "https://github.com/aclarke822/rollup-plugin-screeps"
   },
-  "version": "2.1.0",
+  "version": "3.0.0",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
