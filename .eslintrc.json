@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "no-loops"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": { 
+    "no-console": 0,
+    "no-loops/no-loops": 2
+  },
+  "ignorePatterns": ["**/dist/*.js","**/node_modules/**"]
+}

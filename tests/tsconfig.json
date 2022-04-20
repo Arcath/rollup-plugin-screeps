@@ -1,12 +1,21 @@
 {
-    "extends": "../tsconfig.json",
+    "extends": "@tsconfig/recommended/tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./fixtures/main.ts",
+        "module": "esnext",
+        "moduleResolution": "node",
         "outDir": "./dist",
-        "module": "es2020",
-        "typeRoots": ["./node_modules/@types","./src"],
+        "typeRoots": [
+            "./node_modules/@types",
+            "./src"
+        ],
         "declaration": false
     },
-    "exclude": ["node_modules","dist"],
-    "include": ["fixtures"]
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "include": [
+        "fixtures"
+    ]
 }

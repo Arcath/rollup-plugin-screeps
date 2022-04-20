@@ -1,8 +1,7 @@
 import del from "rollup-plugin-delete";
 import ts from "rollup-plugin-typescript2";
 import commonjs from '@rollup/plugin-commonjs';
-
-const pkg = require("./package.json");
+import pkg from"./package.json";
 
 export default {
 	input: "./src/index.ts",

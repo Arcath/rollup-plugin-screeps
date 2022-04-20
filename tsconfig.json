@@ -2,6 +2,8 @@
   "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
+    "module": "esnext",
+        "moduleResolution": "node",
     "baseUrl": "src/",
     "sourceMap": true,
     "strict": true,
@@ -10,7 +12,6 @@
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "declaration": true,
-    "moduleResolution": "node",
     "typeRoots": [
       "./node_modules/@types",
       "./typings"
@@ -21,6 +22,7 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "tests"
   ]
 }

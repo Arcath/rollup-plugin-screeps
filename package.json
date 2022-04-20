@@ -11,30 +11,37 @@
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "lint-and-fix": "eslint --fix  \"src/**/*.ts\" \"tests/**/*.ts\"",
     "prepublishOnly": "rollup -c",
-    "test": "mocha -r esm -r ts-node/register tests/**/*.spec.ts"
+    "test": "mocha -r esm -r ts-node/esm tests/**/*.spec.ts"
   },
   "dependencies": {
+    
     "git-rev-sync": "^3.x",
     "screeps-api": "^1.x"
   },
   "devDependencies": {
+    "eslint": "^8.x",
     "@rollup/plugin-commonjs": "^21.x",
     "@tsconfig/node17": "^1.x",
-    "@tsconfig/recommended": "^1.0.1",
-    "@types/chai": "^4.3.1",
+    "@tsconfig/recommended": "^1.x",
+    "@types/chai": "^4.x",
+    "@types/eslint": "^8.x",
     "@types/git-rev-sync": "^2.x",
     "@types/mocha": "^9.x",
     "@types/node": "^17.x",
     "@types/rollup": "^0.x",
+    "@typescript-eslint/eslint-plugin": "^5.x",
     "chai": "^4.x",
     "chai-as-promised": "^7.x",
+    "eslint-plugin-no-loops": "^0.x",
     "esm": "^3.x",
     "mocha": "^9.x",
     "rollup": "^2.x",
     "rollup-plugin-clear": "^2.x",
     "rollup-plugin-copy": "^3.x",
-    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-delete": "^2.x",
     "rollup-plugin-hypothetical": "^2.x",
     "rollup-plugin-typescript2": "^0.x",
     "ts-node": "^10.x",
