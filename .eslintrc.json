@@ -10,9 +10,12 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "rules": { 
+  "rules": {
     "no-console": 0,
     "no-loops/no-loops": 2
   },
-  "ignorePatterns": ["**/dist/*.js","**/node_modules/**"]
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**"
+  ]
 }

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as rollup from 'rollup';
-import typescript from "rollup-plugin-typescript2";
+import typescript from '@rollup/plugin-typescript';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import fs from 'fs';
@@ -7,7 +8,7 @@ import path from 'path';
 import git from 'git-rev-sync';
 import del from "rollup-plugin-delete";
 import copy from "rollup-plugin-copy";
-import commonjs from '@rollup/plugin-commonjs';
+//import commonjs from '@rollup/plugin-commonjs';
 
 
 import * as screeps from '../src/rollup-plugin-screeps';
@@ -72,7 +73,7 @@ describe('Rollup Screeps Plugin', function () {
       },
       plugins: [
         del({ "targets": ["./tests/dist"] }),
-        commonjs(),
+        //commonjs(),
         typescript({ tsconfig: './tests/tsconfig.json' }),
         screeps.screeps({ dryRun: true })
       ]
@@ -82,9 +83,8 @@ describe('Rollup Screeps Plugin', function () {
     const output = (await bundle.write(options.output as rollup.OutputOptions)).output;
 
     output.forEach(item => {
-      if (item.type !== undefined && item.type === "chunk" && output.map !== undefined) {
-        expect(output.map.toString(), output.map.toString()).to.match(/^module.exports/)
-        console.log(output.map.toString())
+      if (item.type !== undefined && item.type === "chunk" && item.map !== undefined) {
+        expect(item.map.toString()).to.match(/^module.exports/)
       }
     });
 
@@ -112,7 +112,7 @@ describe('Rollup Screeps Plugin', function () {
       plugins: [
         del({ "targets": ["./tests/dist"] }),
         typescript({ tsconfig: './tests/tsconfig.json' }),
-        commonjs(),
+        //commonjs(),
         screeps.screeps(screepsOptions)
       ]
     }
@@ -138,7 +138,7 @@ describe('Rollup Screeps Plugin', function () {
       plugins: [
         del({ "targets": ["./tests/dist"] }),
         typescript({ tsconfig: './tests/tsconfig.json' }),
-        commonjs(),
+        //commonjs(),
         screeps.screeps(screepsOptions)
       ]
     }
@@ -164,7 +164,7 @@ describe('Rollup Screeps Plugin', function () {
       plugins: [
         del({ "targets": ["./tests/dist"] }),
         typescript({ tsconfig: './tests/tsconfig.json' }),
-        commonjs(),
+        //commonjs(),
         copy({
           targets: [
             { src: "./tests/fixtures/*.wasm", dest: "./tests/dist" }
@@ -200,7 +200,7 @@ describe('Rollup Screeps Plugin', function () {
       plugins: [
         del({ "targets": ["./tests/dist"] }),
         typescript({ tsconfig: './tests/tsconfig.json' }),
-        commonjs(),
+        //commonjs(),
         copy({
           targets: [
             { src: "./tests/fixtures/*.wasm", dest: "./tests/dist" }

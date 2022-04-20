@@ -1,7 +1,7 @@
-import { ScreepsAPI } from 'screeps-api'
-import * as fs from 'fs'
-import * as git from 'git-rev-sync'
-import * as path from 'path'
+import { ScreepsAPI } from 'screeps-api';
+import { renameSync, readFileSync, readdirSync } from 'fs';
+import * as git from 'git-rev-sync';
+import { dirname, extname, join } from 'path';
 import { Plugin, OutputOptions, OutputBundle } from 'rollup';
 
 
@@ -32,7 +32,7 @@ export interface CodeList {
 
 export function generateSourceMaps(bundle: OutputBundle) {
   // Iterate through bundle and test if type===chunk && map is defined
-  
+
   Object.keys(bundle).forEach(filename => {
     const item = bundle[filename];
     if (item.type === "chunk" && item.map) {
@@ -52,7 +52,7 @@ export function generateSourceMaps(bundle: OutputBundle) {
 }
 
 export function writeSourceMaps(options: OutputOptions) {
-  fs.renameSync(
+  renameSync(
     options.file + '.map',
     options.file + '.map.js'
   )
@@ -81,7 +81,7 @@ export function validateConfig(cfg: Partial<ScreepsConfig>): cfg is ScreepsConfi
 }
 
 export function loadConfigFile(configFile: string) {
-  const data = fs.readFileSync(configFile, 'utf8')
+  const data = readFileSync(configFile, 'utf8')
   const cfg = JSON.parse(data) as Partial<ScreepsConfig>
   if (!validateConfig(cfg)) throw new TypeError("Invalid config")
   if (cfg.email && cfg.password && !cfg.token && cfg.hostname === 'screeps.com') { console.log('Please change your email/password to a token') }
@@ -123,14 +123,14 @@ export function runUpload(api: any, branch: string, code: CodeList) {
 
 export function getFileList(outputFile: string) {
   const code: CodeList = {}
-  const base = path.dirname(outputFile)
-  const files = fs.readdirSync(base).filter((f) => path.extname(f) === '.js' || path.extname(f) === '.wasm')
+  const base = dirname(outputFile)
+  const files = readdirSync(base).filter((f) => extname(f) === '.js' || extname(f) === '.wasm')
   files.map((file) => {
     if (file.endsWith('.js')) {
-      code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8');
+      code[file.replace(/\.js$/i, '')] = readFileSync(join(base, file), 'utf8');
     } else {
       code[file] = {
-        binary: fs.readFileSync(path.join(base, file)).toString('base64')
+        binary: readFileSync(join(base, file)).toString('base64')
       }
     }
   })

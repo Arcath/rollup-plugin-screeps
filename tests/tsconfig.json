@@ -1,21 +1,12 @@
 {
-    "extends": "@tsconfig/recommended/tsconfig.json",
+    "extends": "../tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./fixtures/main.ts",
-        "module": "esnext",
-        "moduleResolution": "node",
         "outDir": "./dist",
-        "typeRoots": [
-            "./node_modules/@types",
-            "./src"
-        ],
+        "rootDir": "./",
+        "typeRoots": ["./node_modules/@types","./src"],
         "declaration": false
     },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ],
-    "include": [
-        "fixtures"
-    ]
+    "exclude": ["node_modules","dist"],
+    "include": ["fixtures"]
 }

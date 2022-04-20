@@ -1,10 +1,10 @@
 {
-  "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
+    "module": "ES2015",
+    "target": "ES2015",
     "outDir": "dist",
-    "module": "esnext",
-        "moduleResolution": "node",
     "baseUrl": "src/",
+    "rootDir": "src",
     "sourceMap": true,
     "strict": true,
     "experimentalDecorators": true,
@@ -12,17 +12,13 @@
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "declaration": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./typings"
-    ],
+    "moduleResolution": "Node",
+    "typeRoots": ["./node_modules/@types","./typings"],
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*.ts"
-  ],
   "exclude": [
     "node_modules",
-    "dist",
-    "tests"
-  ]
+    "dist"
+  ],
+  "include": ["src"]
 }
