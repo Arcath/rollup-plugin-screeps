@@ -130,7 +130,7 @@ export function getFileList(outputFile: string) {
     if (file.endsWith('.js')) {
         code[file.replace(/\.js$/i, '')] = fs.readFileSync(path.join(base, file), 'utf8');
     } else {
-        code[file] = {
+        code[file.replace(/\.wasm$/i, '')] = {
             binary: fs.readFileSync(path.join(base, file)).toString('base64')
         }
     }
